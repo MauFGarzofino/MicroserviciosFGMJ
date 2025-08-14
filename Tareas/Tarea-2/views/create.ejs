@@ -1,0 +1,27 @@
+<!doctype html>
+<html lang="es">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Crear contacto</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+
+<body class="container py-4">
+  <h3>Nuevo contacto</h3>
+  <form action="/contactos" method="post" class="row g-2">
+    <div class="col-md-6"><input class="form-control" name="nombres" placeholder="Nombres" required></div>
+    <div class="col-md-6"><input class="form-control" name="apellidos" placeholder="Apellidos" required></div>
+    <div class="col-md-4"><input class="form-control" type="date" name="fecha_nacimiento" required></div>
+    <div class="col-md-8"><input class="form-control" name="direccion" placeholder="Dirección" required></div>
+    <div class="col-md-4"><input class="form-control" name="celular" placeholder="Celular" required></div>
+    <div class="col-md-8"><input class="form-control" type="email" name="correo" placeholder="Correo" required></div>
+    <div class="col-12 mt-2">
+      <button class="btn btn-primary" type="submit">Guardar</button>
+      <a class="btn btn-secondary" href="/">Cancelar</a>
+    </div>
+  </form>
+</body>
+
+</html>

@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="es">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Agenda</title>
+    <script src="https://unpkg.com/boxicons@latest/dist/boxicons.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+
+<body>
+    <nav class="navbar navbar-expand-lg bg-body-tertiary">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="/">Agenda</a>
+        </div>
+    </nav>
+
+    <div class="container">
+        <a href="/create" class="btn btn-outline-primary mt-4"><box-icon name='plus-circle'></box-icon></a>
+
+        <table class="table table-bordered table-striped text-center mt-4">
+            <thead>
+                <tr class="bg-primary text-white">
+                    <th>ID</th>
+                    <th>NOMBRES</th>
+                    <th>APELLIDOS</th>
+                    <th>FECHA NACIMIENTO</th>
+                    <th>DIRECCIÓN</th>
+                    <th>CELULAR</th>
+                    <th>CORREO</th>
+                    <th>ACCIONES</th>
+                </tr>
+            </thead>
+            <tbody>
+                <% if (result && result.length) { result.forEach((agenda)=> { %>
+                    <tr>
+                        <td>
+                            <%= agenda.id %>
+                        </td>
+                        <td>
+                            <%= agenda.nombres %>
+                        </td>
+                        <td>
+                            <%= agenda.apellidos %>
+                        </td>
+                        <td>
+                            <%= new Date(agenda.fecha_nacimiento).toISOString().slice(0,10) %>
+                        </td>
+                        <td>
+                            <%= agenda.direccion %>
+                        </td>
+                        <td>
+                            <%= agenda.celular %>
+                        </td>
+                        <td>
+                            <%= agenda.correo %>
+                        </td>
+                        <td>
+                            <a href="/edit/<%= agenda.id %>" class="btn btn-sm btn-outline-secondary">Editar</a>
+                            <form action="/delete/<%= agenda.id %>" method="post" class="d-inline">
+                                <button class="btn btn-sm btn-outline-danger"
+                                    onclick="return confirm('¿Eliminar?')">Borrar</button>
+                            </form>
+                        </td>
+                    </tr>
+                    <% }) } else { %>
+                        <tr>
+                            <td colspan="8" class="text-muted">Sin registros</td>
+                        </tr>
+                        <% } %>
+            </tbody>
+        </table>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+
+</html>
