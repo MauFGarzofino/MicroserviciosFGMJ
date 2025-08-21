@@ -24,7 +24,6 @@ const AgendaSchema = new mongoose.Schema(
     }
 );
 
-// índice único por correo
 AgendaSchema.index({ correo: 1 }, { unique: true });
 
 const AgendaModel = mongoose.model('Agenda', AgendaSchema);
