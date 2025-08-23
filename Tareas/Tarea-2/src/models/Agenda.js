@@ -24,7 +24,7 @@ const AgendaSchema = new mongoose.Schema(
     }
 );
 
-AgendaSchema.index({ correo: 1 }, { unique: true });
+AgendaSchema.index({ correo: 1 });
 
 const AgendaModel = mongoose.model('Agenda', AgendaSchema);
 module.exports = { AgendaModel };

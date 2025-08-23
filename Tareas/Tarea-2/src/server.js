@@ -10,7 +10,9 @@ app.use(express.static('public'));
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(methodOverride('_method')); // soporte PUT y DELETE
 
-mongoose.connect('mongodb://localhost:27017/agenda_db', {
+const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://localhost:27017/agenda_db';
+
+mongoose.connect(MONGODB_URI, {
     useNewUrlParser: true,
     useUnifiedTopology: true,
 }).then(() => {
