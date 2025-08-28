@@ -1,0 +1,20 @@
+<%- include('layout', { title: 'Nueva Tarea' , body: ` <div class="card">
+    <form action="/tasks/html" method="POST">
+        <label for="title">Título</label>
+        <input id="title" name="title" required />
+        <label for="description">Descripción</label>
+        <textarea id="description" name="description" rows="3"></textarea>
+        <label for="status">Estado</label>
+        <select id="status" name="status">
+            <option value="pending">pendiente</option>
+            <option value="in_progress">en progreso</option>
+            <option value="completed">completado</option>
+        </select>
+        <div class="row">
+            <button class="btn" type="submit">Guardar</button>
+            <a class="btn" href="/">Volver</a>
+        </div>
+    </form>
+    </div>
+    `
+    }) %>

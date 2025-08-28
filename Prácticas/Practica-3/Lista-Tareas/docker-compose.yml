@@ -1,0 +1,21 @@
+version: "3.9"
+
+services:
+  db:
+    image: mongo:6
+    container_name: tasks-mongo
+    ports:
+      - "27018:27017"
+    volumes:
+      - mongo_data:/data/db
+
+  app:
+    build: .
+    container_name: tasks-app
+    env_file: .env
+    depends_on:
+      - db
+    ports:
+      - "3000:3000"
+volumes:
+  mongo_data:

@@ -1,0 +1,20 @@
+<%- include('layout', { title: 'Editar Tarea' , body: ` <div class="card">
+    <form action="/tasks/${task._id}/update" method="POST">
+        <label for="title">Título</label>
+        <input id="title" name="title" value="${task.title}" required />
+        <label for="description">Descripción</label>
+        <textarea id="description" name="description" rows="3">${task.description || ''}</textarea>
+        <label for="status">Estado</label>
+        <select id="status" name="status">
+            ${['pending','in_progress','completed'].map(s => `
+            <option value="${s}" ${task.status===s?'selected':''}>${s}</option>
+            `).join('')}
+        </select>
+        <div class="row">
+            <button class="btn" type="submit">Actualizar</button>
+            <a class="btn" href="/">Volver</a>
+        </div>
+    </form>
+    </div>
+    `
+    }) %>
