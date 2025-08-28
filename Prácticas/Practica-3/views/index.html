@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="es">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Calculadora Web</title>
+    <style>
+        body {
+            font-family: system-ui, Arial, sans-serif;
+            max-width: 560px;
+            margin: 40px auto;
+            padding: 0 16px;
+        }
+
+        .card {
+            border: 1px solid #e5e7eb;
+            border-radius: 12px;
+            padding: 20px;
+        }
+
+        label {
+            display: block;
+            margin-top: 12px;
+            font-weight: 600;
+        }
+
+        input,
+        select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #d1d5db;
+            border-radius: 8px;
+            margin-top: 6px;
+        }
+
+        button {
+            margin-top: 16px;
+            padding: 10px 14px;
+            border-radius: 8px;
+            background: #111827;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+
+        button:hover {
+            opacity: .95;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>Calculadora</h1>
+    <div class="card">
+        <form action="/calcular" method="POST">
+            <label for="operacion">Operación</label>
+            <select id="operacion" name="operacion" required>
+                <option value="sumar">Sumar</option>
+                <option value="restar">Restar</option>
+                <option value="multiplicar">Multiplicar</option>
+                <option value="dividir">Dividir</option>
+            </select>
+
+            <label for="a">Valor de a</label>
+            <input id="a" name="a" type="number" step="any" placeholder="Ej: 12.5" required />
+
+            <label for="b">Valor de b</label>
+            <input id="b" name="b" type="number" step="any" placeholder="Ej: 3" required />
+
+            <button type="submit">Calcular</button>
+        </form>
+    </div>
+</body>
+
+</html>
