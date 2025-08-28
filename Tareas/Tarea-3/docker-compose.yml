@@ -1,0 +1,23 @@
+services:
+  mongo:
+    image: mongo:6
+    container_name: mongo-agenda
+    restart: always
+    volumes:
+      - mongo_data:/data/db
+    ports:
+      - "27018:27017"
+
+  app:
+    image: mauw33/practica-2:1.0
+    container_name: agenda-app
+    restart: always
+    depends_on:
+      - mongo
+    environment:
+      - MONGODB_URI=mongodb://mongo:27017/agenda_db
+    ports:
+      - "3000:3000"
+
+volumes:
+  mongo_data:
