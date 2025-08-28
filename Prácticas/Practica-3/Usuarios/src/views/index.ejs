@@ -1,0 +1,35 @@
+<%- include('layout', {
+  title: 'Lista de Usuarios',
+  body: `
+    <a class="btn" href="/users/new">Nuevo usuario</a>
+    <div class="card">
+      <table>
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Nombre</th>
+            <th>Correo Electrónico</th>
+            <th>Fecha de Registro</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${users.length === 0
+            ? `<tr><td colspan="5">No hay usuarios</td></tr>`
+            : users.map(u => `
+              <tr>
+                <td>${u.id}</td>
+                <td>${u.name}</td>
+                <td>${u.email}</td>
+                <td>${new Date(u.created_at).toLocaleString('es-BO')}</td>
+                <td>
+                  <form action="/users/${u.id}/delete" method="POST" onsubmit="return confirm('¿Eliminar?');">
+                    <button class="btn btn-danger" type="submit">Eliminar</button>
+                  </form>
+                </td>
+              </tr>`).join('')}
+        </tbody>
+      </table>
+    </div>
+  `
+}) %>

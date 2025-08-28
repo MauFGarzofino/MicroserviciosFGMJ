@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="es">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>
+        <%= title || 'Usuarios' %>
+    </title>
+    <style>
+        body {
+            font-family: system-ui, Arial, sans-serif;
+            max-width: 920px;
+            margin: 32px auto;
+            padding: 0 16px;
+        }
+
+        .btn {
+            background: #111827;
+            color: #fff;
+            padding: 8px 12px;
+            border-radius: 8px;
+            text-decoration: none;
+            border: none;
+            cursor: pointer;
+        }
+
+        .btn-danger {
+            background: #b91c1c;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 12px;
+        }
+
+        th,
+        td {
+            border: 1px solid #e5e7eb;
+            padding: 8px;
+            text-align: left;
+        }
+
+        th {
+            background: #f9fafb;
+        }
+
+        .card {
+            border: 1px solid #e5e7eb;
+            border-radius: 12px;
+            padding: 16px;
+            margin-top: 16px;
+        }
+
+        input {
+            padding: 8px;
+            border: 1px solid #d1d5db;
+            border-radius: 8px;
+            width: 100%;
+        }
+
+        label {
+            display: block;
+            margin-top: 8px;
+            font-weight: 600;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>
+        <%= title || 'Usuarios' %>
+    </h1>
+    <%- body %>
+</body>
+
+</html>
