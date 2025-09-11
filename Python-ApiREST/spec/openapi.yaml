@@ -1,0 +1,303 @@
+openapi: 3.0.4
+info:
+  title: Alumnos API
+  version: "1.0.0"
+  description: ApiREST - FLASK.
+servers:
+  - url: http://localhost:5000
+tags:
+  - name: Alumnos
+    description: Operaciones sobre alumnos
+
+paths:
+  /api/alumnos:
+    get:
+      summary: Listar alumnos
+      tags: [Alumnos]
+      parameters:
+        - in: query
+          name: page
+          required: false
+          schema: { type: integer, minimum: 1, default: 1 }
+          description: Página a consultar (1-indexado)
+        - in: query
+          name: limit
+          required: false
+          schema: { type: integer, minimum: 1, default: 10 }
+          description: Tamaño de página (items por página)
+      responses:
+        "200":
+          description: Lista paginada de alumnos
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PaginatedAlumnos"
+              examples:
+                ejemplo:
+                  value:
+                    data:
+                      - id: 1
+                        ci: "123456"
+                        nombres: "Ana"
+                        apellidos: "Ramírez"
+                        sexo: "F"
+                        email: "ana@example.com"
+                      - id: 2
+                        ci: "654321"
+                        nombres: "Luis"
+                        apellidos: "Gómez"
+                        sexo: "M"
+                        email: "luis@example.com"
+                    meta:
+                      total: 3
+                      page: 1
+                      limit: 2
+                      total_pages: 2
+        "400":
+          description: Parámetros inválidos
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ValidationError"
+              examples:
+                page_invalida:
+                  value:
+                    message: "Parámetros inválidos"
+                    errors:
+                      page: ["Debe ser >= 1"]
+
+    post:
+      summary: Crear alumno
+      tags: [Alumnos]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AlumnoCreate"
+            examples:
+              ejemplo:
+                value:
+                  ci: "987654"
+                  nombres: "Luis"
+                  apellidos: "Gómez"
+                  sexo: "M"
+                  email: "luis@example.com"
+      responses:
+        "201":
+          description: Creado
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Alumno"
+        "400":
+          description: Payload inválido
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "409":
+          description: Conflicto (por ejemplo, CI duplicado)
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+  /api/alumnos/{alumno_id}:
+    parameters:
+      - in: path
+        name: alumno_id
+        required: true
+        schema:
+          type: integer
+        description: ID del alumno
+    get:
+      summary: Obtener alumno por ID
+      tags: [Alumnos]
+      responses:
+        "200":
+          description: Alumno encontrado
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Alumno"
+              examples:
+                ejemplo:
+                  value:
+                    id: 1
+                    ci: "123456"
+                    nombres: "Ana"
+                    apellidos: "Ramírez"
+                    sexo: "F"
+                    email: "ana@example.com"
+        "404":
+          description: No encontrado
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+              examples:
+                notFound:
+                  value:
+                    message: "Alumno no encontrado"
+
+    patch:
+      summary: Actualizar alumno parcialmente
+      tags: [Alumnos]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AlumnoUpdate"
+            examples:
+              parcial-nombre:
+                value:
+                  nombres: "Luis Alberto"
+              parcial-email:
+                value:
+                  email: "lagomez@example.com"
+      responses:
+        "200":
+          description: Actualizado
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Alumno"
+        "400":
+          description: Payload inválido
+          content:
+            application/json:
+              schema:
+               $ref: "#/components/schemas/ValidationError"
+        "404":
+          description: No encontrado
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+    delete:
+      summary: Eliminar alumno
+      tags: [Alumnos]
+      responses:
+        "204":
+          description: Eliminado
+        "404":
+          description: No encontrado
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+components:
+  schemas:
+    Alumno:
+      type: object
+      required: [id, ci, nombres, apellidos, sexo]
+      properties:
+        id:
+          type: integer
+          example: 1
+        ci:
+          type: string
+          example: "123456"
+        nombres:
+          type: string
+          example: "Ana"
+        apellidos:
+          type: string
+          example: "Ramírez"
+        sexo:
+          type: string
+          enum: [M, F, X]
+          example: "F"
+        email:
+          type: string
+          format: email
+          example: "ana@example.com"
+
+    AlumnoCreate:
+      type: object
+      required: [ci, nombres, apellidos, sexo, email]
+      properties:
+        ci:
+          type: string
+          example: "987654"
+        nombres:
+          type: string
+          example: "Luis"
+        apellidos:
+          type: string
+          example: "Gómez"
+        sexo:
+          type: string
+          enum: [M, F, X]
+          example: "M"
+        email:
+          type: string
+          format: email
+          example: "luis@example.com"
+
+    AlumnoUpdate:
+      type: object
+      properties:
+        ci:
+          type: string
+          example: "444555"
+        nombres:
+          type: string
+          example: "Luis Alberto"
+        apellidos:
+          type: string
+          example: "Gómez"
+        sexo:
+          type: string
+          enum: [M, F, X]
+          example: "M"
+        email:
+          type: string
+          format: email
+          example: "lagomez@example.com"
+          
+    PaginatedAlumnos:
+      type: object
+      required: [data, meta]
+      properties:
+        data:
+          type: array
+          items:
+            $ref: "#/components/schemas/Alumno"
+        meta:
+          type: object
+          required: [total, page, limit, total_pages]
+          properties:
+            total: { type: integer, example: 3 }
+            page: { type: integer, example: 1 }
+            limit: { type: integer, example: 10 }
+            total_pages: { type: integer, example: 1 }
+
+    Error:
+      type: object
+      properties:
+        message:
+          type: string
+          example: "Alumno no encontrado"
+
+    ValidationError:
+      type: object
+      properties:
+        message:
+          type: string
+          example: "Payload inválido"
+        errors:
+          type: object
+          additionalProperties:
+            type: array
+            items:
+              type: string
+      example:
+        message: "Payload inválido"
+        errors:
+          sexo: ["Debe ser M, F o X"]
+          ci: ["Campo requerido"]
