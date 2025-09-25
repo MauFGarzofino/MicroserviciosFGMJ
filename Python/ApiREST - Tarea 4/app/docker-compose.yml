@@ -1,0 +1,31 @@
+version: "3.9"
+services:
+  mongo:
+    image: mongo:6
+    container_name: mongo-sales
+    restart: unless-stopped
+    ports:
+      - "27018:27018" # host:container (opcional publicar)
+    volumes:
+      - mongo_data:/data/db
+    healthcheck:
+      test: [ "CMD", "mongosh", "--eval", "db.adminCommand('ping')" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  app:
+    build: .
+    container_name: sales-api-flask
+    restart: unless-stopped
+    depends_on:
+      mongo:
+        condition: service_healthy
+    environment:
+      - MONGODB_URI=mongodb://mongo:27017/sales_db
+      - PORT=3000
+    ports:
+      - "3000:3000"
+
+volumes:
+  mongo_data:

@@ -1,0 +1,22 @@
+services:
+  mongo:
+    image: mongo:7
+    container_name: workers-mongo
+    ports:
+      - "27018:27017"
+    volumes:
+      - mongo_data:/data/db
+
+  api:
+    build: .
+    container_name: primer-parcial
+    environment:
+      PORT: 3000
+      MONGODB_URI: mongodb://mongo:27017/workers_db
+    ports:
+      - "3000:3000"
+    depends_on:
+      - mongo
+
+volumes:
+  mongo_data:
