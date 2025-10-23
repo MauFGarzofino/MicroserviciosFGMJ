@@ -1,0 +1,15 @@
+# Framework base
+Flask==3.0.3
+
+# ORM y base de datos
+Flask-SQLAlchemy==3.1.1
+PyMySQL==1.1.1
+
+# Autenticación JWT
+PyJWT==2.9.0
+
+# Variables de entorno
+python-dotenv==1.0.1
+
+# CORS (para permitir llamadas desde el front Vite)
+Flask-Cors==4.0.0

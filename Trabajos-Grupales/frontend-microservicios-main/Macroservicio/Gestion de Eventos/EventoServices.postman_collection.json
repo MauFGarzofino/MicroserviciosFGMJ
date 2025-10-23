@@ -1,0 +1,162 @@
+{
+	"info": {
+		"_postman_id": "7de3d618-044e-46d0-9805-7f2553fdba0b",
+		"name": "EventoServices",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "33954741"
+	},
+	"item": [
+		{
+			"name": "ObtenerEventos",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2OGU3NDlkYTIwMTU0MTIwNmQ2ZWE0YWUiLCJyb2xlIjoiYWRtaW4iLCJpYXQiOjE3NTk5ODg3NjgsImV4cCI6MTc1OTk5MjM2OH0.o_vb09Bujwt72ZjNQZw4EUul6wKl1tfqy9155mGfYws",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:5000/api/events",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5000",
+					"path": [
+						"api",
+						"events"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "CrearEventos",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "68e744ba201541206d6ea4a8",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"nombre\": \"Concierto de Rock 3\",\r\n    \"fecha\": \"2025-11-01\",\r\n    \"lugar\": \"Estadio Nacional\",\r\n    \"capacidad\": 500,\r\n    \"precio\": 25.50\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:5000/api/events",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5000",
+					"path": [
+						"api",
+						"events"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "EditarEventos",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2OGU3NDlkYTIwMTU0MTIwNmQ2ZWE0YWUiLCJyb2xlIjoiYWRtaW4iLCJpYXQiOjE3NTk5ODg3NjgsImV4cCI6MTc1OTk5MjM2OH0.o_vb09Bujwt72ZjNQZw4EUul6wKl1tfqy9155mGfYws",
+							"type": "string"
+						}
+					]
+				},
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"nombre\": \"Concierto de Rock Actualizado\",\r\n    \"precio\": 30.00\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:5000/api/events/1",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5000",
+					"path": [
+						"api",
+						"events",
+						"1"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "EliminarEvento",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2OGU3NDlkYTIwMTU0MTIwNmQ2ZWE0YWUiLCJyb2xlIjoiYWRtaW4iLCJpYXQiOjE3NTk5ODg3NjgsImV4cCI6MTc1OTk5MjM2OH0.o_vb09Bujwt72ZjNQZw4EUul6wKl1tfqy9155mGfYws",
+							"type": "string"
+						}
+					]
+				},
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:5000/api/events/3",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5000",
+					"path": [
+						"api",
+						"events",
+						"3"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}

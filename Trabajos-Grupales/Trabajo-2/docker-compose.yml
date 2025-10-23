@@ -1,0 +1,103 @@
+services:
+  # ============ Infra ============
+  rabbitmq:
+    image: rabbitmq:3-management
+    ports:
+      - "5672:5672" # AMQP
+      - "15672:15672" # UI
+    healthcheck:
+      test: [ "CMD", "rabbitmq-diagnostics", "-q", "ping" ]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  mongo:
+    image: mongo:6
+    volumes:
+      - mongo_data:/data/db
+
+  eventsdb:
+    image: mysql:8.0
+    environment:
+      MYSQL_ALLOW_EMPTY_PASSWORD: "yes"
+      MYSQL_DATABASE: eventos_db
+    volumes:
+      - events_mysql:/var/lib/mysql
+    # ============ Servicios ============
+  users:
+    build: ./users-service
+    environment:
+      - MONGO_URL=mongodb://mongo:27017/bd_usuarios
+      - JWT_SECRET=sup6546ersecreto
+      - JWT_EXPIRES_IN=1h
+      - NODE_ENV=production
+    depends_on:
+      - mongo
+
+  events:
+    build: ./events-service
+    environment:
+      - FLASK_ENV=development
+    depends_on:
+      - eventsdb
+
+  purchases:
+    build: ./purchases-service
+    environment:
+      - PORT=${PURCHASES_PORT}
+      - RABBITMQ_URL=${RABBITMQ_URL}
+      - EXCHANGE_NAME=${EXCHANGE_NAME}
+      - EXCHANGE_TYPE=${EXCHANGE_TYPE}
+      - ROUTING_KEY=${ROUTING_KEY}
+      - USERS_BASE_URL=http://users:${USERS_PORT}
+      - EVENTS_BASE_URL=http://events:${EVENTS_PORT}
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+      users:
+        condition: service_started
+      events:
+        condition: service_started
+
+  notifications:
+    build: ./notifications-service
+    environment:
+      - PORT=${NOTIFICATIONS_PORT}
+      - RABBITMQ_URL=${RABBITMQ_URL}
+      - EXCHANGE_NAME=${EXCHANGE_NAME}
+      - EXCHANGE_TYPE=${EXCHANGE_TYPE}
+      - ROUTING_KEY=${ROUTING_KEY}
+      - QUEUE_NAME=notifications.q
+      - DLX_NAME=ticketing.dlx
+      - DLQ_NAME=notifications.dlq
+      - PREFETCH=10
+      - SMTP_HOST=${SMTP_HOST}
+      - SMTP_PORT=${SMTP_PORT}
+      - SMTP_SECURE=${SMTP_SECURE}
+      - SMTP_USER=${SMTP_USER}
+      - SMTP_PASS=${SMTP_PASS}
+      - FROM_EMAIL=${FROM_EMAIL}
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+
+  # ============ Gateway ============
+  nginx:
+    image: nginx:alpine
+    ports:
+      - "${GATEWAY_PORT}:80"
+    volumes:
+      - ./ngixn/nginx.conf:/etc/nginx/nginx.conf:ro
+    depends_on:
+      users:
+        condition: service_started
+      events:
+        condition: service_started
+      purchases:
+        condition: service_started
+      notifications:
+        condition: service_started
+
+volumes:
+  mongo_data:
+  events_mysql:

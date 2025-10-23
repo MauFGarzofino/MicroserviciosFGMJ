@@ -1,0 +1,52 @@
+version: "3.8"
+
+services:
+  compras:
+    build:
+      context: ./compras
+      dockerfile: Dockerfile
+    container_name: compras_app
+    restart: unless-stopped
+    ports:
+      - "8000:8000"
+    env_file:
+      - ../../.env
+    depends_on:
+      - db
+      - rabbitmq
+
+  notificaciones:
+    build:
+      context: ./servicio-notificaciones
+      dockerfile: Dockerfile
+    container_name: notificaciones_app
+    restart: unless-stopped
+    env_file:
+      - ../../.env
+    depends_on:
+      - rabbitmq
+
+  db:
+    image: mysql:8
+    container_name: compras_db
+    restart: unless-stopped
+    environment:
+      MYSQL_ALLOW_EMPTY_PASSWORD: "yes"
+    entrypoint: ["sh", "-c", "php artisan migrate && php artisan serve --host=0.0.0.0 --port=8000"]
+    ports:
+      - "3308:3306"
+    volumes:
+      - db_data:/var/lib/mysql
+
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: rabbitmq
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    environment:
+      RABBITMQ_DEFAULT_USER: guest
+      RABBITMQ_DEFAULT_PASS: guest
+
+volumes:
+  db_data:

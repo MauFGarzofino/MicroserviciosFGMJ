@@ -1,0 +1,102 @@
+worker_processes  1;
+
+events { worker_connections 1024; }
+
+http {
+  access_log /var/log/nginx/access.log;
+  error_log  /var/log/nginx/error.log;
+
+  proxy_buffering on;
+  proxy_buffers 16 16k;
+  proxy_busy_buffers_size 24k;
+  client_max_body_size 20m;
+  sendfile on;
+
+  # WebSocket helper
+  map $http_upgrade $connection_upgrade {
+    default upgrade;
+    ''      close;
+  }
+
+  # =========================
+  # USUARIOS (Node 3000)
+  # =========================
+  server {
+    listen 80;
+    server_name usuarios.localhost;
+
+    location / {
+      # Preflight CORS SOLO dentro de location
+      if ($request_method = OPTIONS) {
+        add_header 'Access-Control-Allow-Origin' '*' always;
+        add_header 'Access-Control-Allow-Methods' 'GET,POST,PUT,PATCH,DELETE,OPTIONS' always;
+        add_header 'Access-Control-Allow-Headers' 'Authorization,Content-Type' always;
+        add_header 'Access-Control-Max-Age' '86400' always;
+        return 204;
+      }
+      # CORS normal
+      add_header 'Access-Control-Allow-Origin' '*' always;
+
+      proxy_pass         http://usuarios_app:3000;
+      proxy_set_header   Host $host;
+      proxy_set_header   X-Real-IP $remote_addr;
+      proxy_set_header   X-Forwarded-For $proxy_add_x_forwarded_for;
+      proxy_set_header   X-Forwarded-Proto $scheme;
+
+      # WebSockets si tu Node los usa
+      proxy_http_version 1.1;
+      proxy_set_header   Upgrade $http_upgrade;
+      proxy_set_header   Connection $connection_upgrade;
+    }
+  }
+
+  # =========================
+  # COMPRAS (Laravel 8000)
+  # =========================
+  server {
+    listen 80;
+    server_name compras.localhost;
+
+    location / {
+      if ($request_method = OPTIONS) {
+        add_header 'Access-Control-Allow-Origin' '*' always;
+        add_header 'Access-Control-Allow-Methods' 'GET,POST,PUT,PATCH,DELETE,OPTIONS' always;
+        add_header 'Access-Control-Allow-Headers' 'Authorization,Content-Type' always;
+        add_header 'Access-Control-Max-Age' '86400' always;
+        return 204;
+      }
+      add_header 'Access-Control-Allow-Origin' '*' always;
+
+      proxy_pass         http://compras_app:8000;
+      proxy_set_header   Host $host;
+      proxy_set_header   X-Real-IP $remote_addr;
+      proxy_set_header   X-Forwarded-For $proxy_add_x_forwarded_for;
+      proxy_set_header   X-Forwarded-Proto $scheme;
+    }
+  }
+
+  # =========================
+  # EVENTOS (Flask 5000)
+  # =========================
+  server {
+    listen 80;
+    server_name eventos.localhost;
+
+    location / {
+      if ($request_method = OPTIONS) {
+        add_header 'Access-Control-Allow-Origin' '*' always;
+        add_header 'Access-Control-Allow-Methods' 'GET,POST,PUT,PATCH,DELETE,OPTIONS' always;
+        add_header 'Access-Control-Allow-Headers' 'Authorization,Content-Type' always;
+        add_header 'Access-Control-Max-Age' '86400' always;
+        return 204;
+      }
+      add_header 'Access-Control-Allow-Origin' '*' always;
+
+      proxy_pass         http://eventos_app:5000;
+      proxy_set_header   Host $host;
+      proxy_set_header   X-Real-IP $remote_addr;
+      proxy_set_header   X-Forwarded-For $proxy_add_x_forwarded_for;
+      proxy_set_header   X-Forwarded-Proto $scheme;
+    }
+  }
+}

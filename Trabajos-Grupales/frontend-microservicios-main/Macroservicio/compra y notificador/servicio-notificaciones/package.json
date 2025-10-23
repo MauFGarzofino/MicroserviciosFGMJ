@@ -1,0 +1,17 @@
+{
+  "name": "servicio-notificaciones",
+  "version": "1.0.0",
+  "type": "module",
+  "main": "consumer.js",
+  "scripts": {
+    "start": "node consumer.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "Microservicio de notificaciones que escucha RabbitMQ y envía correos.",
+  "dependencies": {
+    "amqplib": "^0.10.9",
+    "nodemailer": "^7.0.9"
+  }
+}

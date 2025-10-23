@@ -1,0 +1,27 @@
+# docker-compose.yml
+services:
+  app:
+    build: .
+    container_name: node_app_JWT
+    ports:
+      - "3000:3000"
+    depends_on:
+      - mongo
+    env_file:
+      - ../.env
+    volumes:
+      - .:/app
+      - /app/node_modules
+    restart: always
+
+  mongo:
+    image: mongo:6
+    container_name: mongo_db_JWT
+    restart: always
+    ports:
+      - "27018:27017"
+    volumes:
+      - mongo_data:/data/db
+
+volumes:
+  mongo_data:

@@ -1,0 +1,162 @@
+version: "3.8"
+
+services:
+  # --- Reverse Proxy (NGINX) ---
+  reverse-proxy:
+    image: nginx:1.27
+    container_name: reverse_proxy
+    depends_on:
+      - usuarios_app
+      - compras_app
+      - eventos_app
+    volumes:
+      - ./reverse-proxy/nginx.conf:/etc/nginx/nginx.conf:ro
+    ports:
+      - "80:80"
+      # - "443:443"   # (opcional, si luego agregas TLS dev con mkcert/traefik)
+    networks:
+      - macro_red
+      - eventos_net
+    restart: unless-stopped
+
+  # --- Usuarios (Node + MongoDB) ---
+  usuarios_app:
+    build:
+      context: ./Autenticación y Autorización (Usuarios)
+      dockerfile: Dockerfile
+    container_name: usuarios_app
+    # NGINX hablará por red interna; no exponemos el 3000
+    # ports:
+    #   - "3000:3000"
+    depends_on:
+      - usuarios_mongo
+    env_file:
+      - .env
+    volumes:
+      - ./Autenticación y Autorización (Usuarios):/app
+      - /app/node_modules
+    restart: always
+    networks:
+      - macro_red
+
+  usuarios_mongo:
+    image: mongo:6
+    container_name: usuarios_mongo
+    restart: always
+    ports:
+      - "27018:27017"
+    volumes:
+      - usuarios_mongo_data:/data/db
+    networks:
+      - macro_red
+
+  # --- Compras (Laravel + MySQL + RabbitMQ + Notificaciones) ---
+  compras_app:
+    build:
+      context: ./compra y notificador/compras
+      dockerfile: Dockerfile
+    container_name: compras_app
+    restart: unless-stopped
+    # NGINX hablará por red interna; no exponemos el 8000
+    # ports:
+    #   - "8000:8000"
+    env_file:
+      - .env
+    depends_on:
+      - compras_db
+      - rabbitmq
+    volumes:
+      - ./compra y notificador/compras:/app
+    entrypoint: ["sh", "-c", "php artisan migrate && php artisan serve --host=0.0.0.0 --port=8000"]
+    networks:
+      - macro_red
+
+  notificaciones_app:
+    build:
+      context: ./compra y notificador/servicio-notificaciones
+      dockerfile: Dockerfile
+    container_name: notificaciones_app
+    restart: unless-stopped
+    env_file:
+      - .env
+    depends_on:
+      - rabbitmq
+    volumes:
+      - ./compra y notificador/servicio-notificaciones:/app
+    networks:
+      - macro_red
+    environment:
+      - GMAIL_USER=ejemplo@gmail.com
+      - GMAIL_PASS=1234 5678 9012 3456 ejemplo
+      - RABBITMQ_URL=amqp://guest:guest@rabbitmq:5672
+
+  compras_db:
+    image: mysql:8
+    container_name: compras_db
+    restart: unless-stopped
+    environment:
+      MYSQL_ALLOW_EMPTY_PASSWORD: "yes"
+      MYSQL_DATABASE: compras_db
+    ports:
+      - "3308:3306"
+    volumes:
+      - compras_db_data:/var/lib/mysql
+    networks:
+      - macro_red
+
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: rabbitmq
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    environment:
+      RABBITMQ_DEFAULT_USER: guest
+      RABBITMQ_DEFAULT_PASS: guest
+    networks:
+      - macro_red
+
+  # --- Eventos (Flask + MySQL) ---
+  eventos_db:
+    image: mysql:8.0
+    container_name: eventos_db
+    environment:
+      MYSQL_ROOT_PASSWORD: ''
+      MYSQL_DATABASE: eventos_db
+      MYSQL_ALLOW_EMPTY_PASSWORD: 'yes'
+    ports:
+      - "3307:3306"
+    volumes:
+      - eventos_db_data:/var/lib/mysql
+    networks:
+      - eventos_net
+
+  eventos_app:
+    build:
+      context: ./Gestion de Eventos
+      dockerfile: Dockerfile
+    container_name: eventos_app
+    # NGINX hablará por red interna; no exponemos el 5000
+    # ports:
+    #   - "5000:5000"
+    env_file:
+      - .env
+    environment:
+      - FLASK_ENV=development
+    depends_on:
+      - eventos_db
+    volumes:
+      - ./Gestion de Eventos:/app
+    networks:
+      - eventos_net
+
+volumes:
+  usuarios_mongo_data:
+  compras_db_data:
+  eventos_db_data:
+
+networks:
+  macro_red:
+    driver: bridge
+  eventos_net:
+    driver: bridge

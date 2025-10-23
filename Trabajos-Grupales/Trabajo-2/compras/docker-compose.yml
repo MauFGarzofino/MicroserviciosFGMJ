@@ -1,0 +1,27 @@
+version: '3.8'
+
+services:
+  compras:
+    build: .
+    ports:
+      - "8000:80"
+    depends_on:
+      - db
+    volumes:
+      - .:/var/www/html
+    networks:
+      - red-compras
+
+  db:
+    image: mysql:8.0
+    environment:
+      MYSQL_DATABASE: compras_db
+      MYSQL_ALLOW_EMPTY_PASSWORD: 'yes'
+    ports:
+      - "3308:3306"
+    networks:
+      - red-compras
+
+networks:
+  red-compras:
+    driver: bridge

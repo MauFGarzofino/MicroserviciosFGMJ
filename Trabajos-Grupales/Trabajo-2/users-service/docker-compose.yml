@@ -1,0 +1,29 @@
+services:
+  app:
+    build: .
+    container_name: node_app_JWT
+    ports:
+      - "3000:3000"
+    depends_on:
+      - mongo
+    environment:
+      - MONGO_URL=mongodb://mongo:27017/bd_usuarios
+      - JWT_SECRET=sup6546ersecreto
+      - JWT_EXPIRES_IN=1h
+      - NODE_ENV=production
+    volumes:
+      - .:/app
+      - /app/node_modules
+    restart: always
+
+  mongo:
+    image: mongo:6
+    container_name: mongo_db_JWT
+    restart: always
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo_data:/data/db
+
+volumes:
+  mongo_data:
