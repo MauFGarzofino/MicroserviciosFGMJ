@@ -1,0 +1,15 @@
+syntax = "proto3";
+
+package vehiculo;
+
+service VehiculoService {
+  rpc VerificarExistencia (PeticionVerificar) returns (RespuestaVerificar);
+}
+
+message PeticionVerificar {
+  string placa = 1;
+}
+
+message RespuestaVerificar {
+  bool existe = 1;
+}

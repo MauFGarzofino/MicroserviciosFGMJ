@@ -1,0 +1,58 @@
+services:
+  rabbitmq:
+    image: rabbitmq:3-management
+    ports: [ "5672:5672", "15672:15672" ]
+    environment:
+      RABBITMQ_DEFAULT_USER: guest
+      RABBITMQ_DEFAULT_PASS: guest
+    healthcheck:
+      test: [ "CMD", "rabbitmq-diagnostics", "ping" ]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+      start_period: 10s
+
+  users-grpc:
+    image: users-grpc:exam
+    build: ./users-grpc
+    environment: { PORT: 4001 }
+    ports: [ "4001:4001" ]
+
+  orders-svc:
+    image: orders-svc:exam
+    build: ./orders-svc
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+      users-grpc:
+        condition: service_started
+    environment:
+      PORT: 4002
+      USERS_GRPC_ADDR: users-grpc:50051
+      AMQP_URL: amqp://guest:guest@rabbitmq:5672
+      EXCHANGE: domain.events
+      ROUTING_KEY: order.created
+    ports: [ "4002:4002" ]
+    restart: on-failure
+
+  notifications-worker:
+    image: notifications-worker:exam
+    build: ./notifications-worker
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+    environment:
+      AMQP_URL: amqp://guest:guest@rabbitmq:5672
+      EXCHANGE: domain.events
+      QUEUE: notifications.order.created
+      ROUTING_KEY: order.created
+    restart: on-failure
+
+  api-gateway:
+    image: nginx:alpine
+    depends_on:
+      orders-svc:
+        condition: service_started
+    ports: [ "8080:80" ]
+    volumes:
+      - ./gateway/nginx.conf:/etc/nginx/nginx.conf:ro
